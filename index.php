@@ -220,6 +220,12 @@
                 <p class="text-center text-base sm:text-lg opacity-90">Discover, share, and enjoy the funniest memes from Zambia and beyond!</p>
             </div>
         </div>
+        <div class="flex justify-center space-x-2 sm:space-x-4 mb-8">
+    <button class="sort-btn bg-zambian-green text-white px-4 py-2 rounded-full font-semibold shadow-md transition-all duration-200" data-sort="new">New</button>
+    <button class="sort-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-sort="hot">Hot</button>
+    <button class="sort-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-sort="trending">Trending</button>
+    <button class="sort-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-sort="all">All</button>
+</div>
 
         <div class="space-y-6" id="memeGrid">
             </div>
