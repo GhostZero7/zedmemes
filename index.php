@@ -1,5 +1,5 @@
- <?php session_start(); ?>
- <!DOCTYPE html>
+<?php session_start(); ?>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -985,18 +985,17 @@
                 // Assuming memes are stored in an 'uploads' directory
                 const imageUrl = `uploads/${meme.filename}`
                 const memeTitle = meme.title || "Untitled Meme" // Use title if available, otherwise default
-
-                const memeCardHtml = $(`
-                    <div class="space-y-2" data-meme-id="${meme.id}">
-                        <div class="flex justify-start">
-                            <div class="bg-${tagColor}/80 backdrop-blur-sm rounded-full px-3 py-1">
-                                <span class="text-white text-xs font-medium">Trending</span>
-                            </div>
-                        </div>
-                        <div class="meme-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300">
-                            <div class="relative w-full">
-                                <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
-                            </div>
+const memeCardHtml = $(`
+    <div class="space-y-2">
+        <div class="flex justify-start">
+            <div class="bg-${tagColor}/80 backdrop-blur-sm rounded-full px-3 py-1">
+                <span class="text-white text-xs font-medium">Trending</span>
+            </div>
+        </div>
+        <div class="meme-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300" data-meme-id="${meme.id}">
+            <div class="relative w-full">
+                <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
+            </div>
                             <div class="p-4">
                                 <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">${memeTitle}</h3>
                                 <div class="flex items-center justify-between mb-3">
