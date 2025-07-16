@@ -1,5 +1,5 @@
 <?php
 session_start();
-session_destroy();
-header("Location: index.php");
-exit;
+session_unset(); // Unset all variables
+session_destroy(); // Fully kill session
+echo json_encode(['success' => true]);

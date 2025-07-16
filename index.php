@@ -446,11 +446,15 @@ $username = $_SESSION['username'] ?? '';
         let currentPage = 0
         const memesPerPage = 5 // Matches default limit in fetch_memes.php
         let totalMemes = 0 // To be updated by fetch_memes.php response
+        let currentUserId = null
+        
 
         $(document).ready(() => {
-            $.getJSON('check_session.php', function(res) {
-                  console.log("Session check:", res) 
+           $.getJSON('check_session.php', function(res) {
     if (res.loggedIn) {
+        isLoggedIn = true
+        currentUser = res.username
+        currentUserId = res.user_id  // <--- THIS IS CRUCIAL
         updateAuthState(true, res.username)
         hideWelcomeBanner()
     }
@@ -1069,12 +1073,12 @@ $username = $_SESSION['username'] ?? '';
 
             // Logout functionality
             $("#logoutBtn").click(() => {
-                // In a real app, you'd make an AJAX call to logout.php to destroy session
-                // For now, client-side state update
-                updateAuthState(false)
-                showNotification("Logged out successfully! See you soon! 👋", "info")
-                $("#welcomeBanner").removeClass("slide-out").show()
-            })
+    $.post('logout.php', () => {
+        updateAuthState(false);
+        showNotification("Logged out!", "info");
+        $("#welcomeBanner").removeClass("slide-out").show();
+    });
+});
 
             // Filter button click handlers
             $("#filter-all").click(() => {
@@ -1118,9 +1122,10 @@ $username = $_SESSION['username'] ?? '';
             });
 
             // Utility functions
-            function updateAuthState(loggedIn, username = '') {
+            function updateAuthState(loggedIn, username = '',userId = null) {
                 isLoggedIn = loggedIn
                 currentUser = username // Set current user globally
+                currentUserId = userId // Set current user ID globally
                 if (loggedIn) {
                     $("#authButtons").addClass("hidden")
                     $("#userProfile").removeClass("hidden")
@@ -1207,7 +1212,7 @@ $username = $_SESSION['username'] ?? '';
                 const memeTitle = meme.title || "Untitled Meme" // Use title if available, otherwise default
                 
                 // Check if current user is the owner of this meme
-                const isOwner = isLoggedIn && currentUser === meme.username;
+              const isOwner = isLoggedIn && currentUserId === parseInt(meme.user_id) 
                 const ownerButtons = isOwner ? `
                     <button class="reaction-btn edit-btn text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg">
                         <i class="fas fa-edit"></i>
@@ -1268,61 +1273,62 @@ $username = $_SESSION['username'] ?? '';
             }
 
             // Function to fetch memes from fetch_memes.php
-            function fetchMemes(pageToLoad = 0, filter = 'all') {
-                const btn = $("#loadMoreBtn")
-                btn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Loading...')
-                btn.prop('disabled', true)
+            function fetchMemes(pageToLoad = 0, sort = 'all') {
+    const btn = $("#loadMoreBtn")
+    btn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Loading...')
+    btn.prop('disabled', true)
 
-                $.ajax({
-                    url: 'fetch_memes.php',
-                    method: 'GET',
-                    data: { 
-                        page: pageToLoad, 
-                        limit: memesPerPage,
-                        filter: filter 
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            if (pageToLoad === 0) { // Clear only if fetching the first page
-                                $("#memeGrid").empty()
-                            }
-                            if (response.memes.length > 0) {
-                                response.memes.forEach(meme => {
-                                    renderMemeCard(meme)
-                                })
-                                currentPage = pageToLoad
-                                totalMemes = response.total
+    $.ajax({
+        url: 'fetch_memes.php',
+        method: 'GET',
+        data: { 
+            page: pageToLoad, 
+            limit: memesPerPage,
+            sort: sort // <- important
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                if (pageToLoad === 0) {
+                    $("#memeGrid").empty()
+                }
+                if (response.memes.length > 0) {
+                    response.memes.forEach(meme => {
+                        renderMemeCard(meme)
+                    })
+                    currentPage = pageToLoad
+                    totalMemes = response.totalMemes
 
-                                if ((currentPage + 1) * memesPerPage >= totalMemes) {
-                                    btn.hide() // Hide if all memes are loaded
-                                    showNotification("All memes loaded! 🎉", "info")
-                                } else {
-                                    btn.show()
-                                }
-                            } else if (pageToLoad === 0) {
-                                showNotification("No memes found. Upload some to get started!", "info")
-                                btn.hide()
-                            } else {
-                                showNotification("No more memes to load.", "info")
-                                btn.hide()
-                            }
-                        } else {
-                            showNotification("Error fetching memes: " + response.message, "error")
-                            btn.hide() // Hide on error
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        showNotification("Failed to connect to the meme server. Please check fetch_memes.php.", "error")
-                        console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
-                        btn.hide() // Hide on error
-                    },
-                    complete: function() {
-                        btn.html('<i class="fas fa-plus mr-2"></i>Load More Memes')
-                        btn.prop('disabled', false)
+                    if ((currentPage + 1) * memesPerPage >= totalMemes) {
+                        btn.hide()
+                        showNotification("All memes loaded! 🎉", "info")
+                    } else {
+                        btn.show()
                     }
-                })
+                } else if (pageToLoad === 0) {
+                    showNotification("No memes found. Upload some to get started!", "info")
+                    btn.hide()
+                } else {
+                    showNotification("No more memes to load.", "info")
+                    btn.hide()
+                }
+            } else {
+                showNotification("Error fetching memes: " + response.message, "error")
+                btn.hide()
             }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            showNotification("Failed to connect to the meme server. Please check fetch_memes.php.", "error")
+            console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
+            btn.hide()
+        },
+        complete: function() {
+            btn.html('<i class="fas fa-plus mr-2"></i>Load More Memes')
+            btn.prop('disabled', false)
+        }
+    })
+}
+
 
             // Function to fetch comments for a specific meme
             function fetchComments(memeId) {
