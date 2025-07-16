@@ -6,7 +6,7 @@ ZedMemes is a full-featured meme-sharing web app built with PHP, MySQL, and Tail
 
 ---
 
-## ðŸŒŸ Features
+## Features
 
 - **User Registration & Login**
 - **Upload Memes** (images only)
