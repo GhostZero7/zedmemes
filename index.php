@@ -448,6 +448,13 @@ $username = $_SESSION['username'] ?? '';
         let totalMemes = 0 // To be updated by fetch_memes.php response
 
         $(document).ready(() => {
+            $.getJSON('check_session.php', function(res) {
+                  console.log("Session check:", res) 
+    if (res.loggedIn) {
+        updateAuthState(true, res.username)
+        hideWelcomeBanner()
+    }
+})
             // Password strength checker
             function checkPasswordStrength(password) {
                 let strength = 0
