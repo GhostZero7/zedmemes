@@ -220,15 +220,19 @@
                 <p class="text-center text-base sm:text-lg opacity-90">Discover, share, and enjoy the funniest memes from Zambia and beyond!</p>
             </div>
         </div>
-        <div class="flex justify-center space-x-2 sm:space-x-4 mb-8">
-    <button class="sort-btn bg-zambian-green text-white px-4 py-2 rounded-full font-semibold shadow-md transition-all duration-200" data-sort="new">New</button>
-    <button class="sort-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-sort="hot">Hot</button>
-    <button class="sort-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-sort="trending">Trending</button>
-    <button class="sort-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-sort="all">All</button>
-</div>
+
+        <!-- Filter Buttons (Hidden by default) -->
+        <div id="memeFilterPanel" class="hidden flex justify-center space-x-2 sm:space-x-4 mb-8">
+            <button id="filter-all" class="filter-btn bg-zambian-green text-white px-4 py-2 rounded-full font-semibold shadow-md transition-all duration-200" data-filter="all">All</button>
+            <button id="filter-new" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="new">New</button>
+            <button id="filter-trending" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="trending">Trending</button>
+            <button id="filter-popular" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="popular">Popular</button>
+            <button id="filter-hot" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="hot">Hot</button>
+        </div>
 
         <div class="space-y-6" id="memeGrid">
-            </div>
+            <!-- Memes will be loaded here -->
+        </div>
 
         <div class="text-center mt-8 mb-20">
             <button id="loadMoreBtn" class="bg-zambian-green hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
@@ -241,6 +245,7 @@
         <i class="fas fa-plus mr-2"></i>Upload
     </button>
 
+    <!-- Login Modal -->
     <div id="loginModal" class="hidden fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md transform transition-all modal-enter">
             <div class="zambian-gradient p-6 rounded-t-2xl">
@@ -272,6 +277,7 @@
         </div>
     </div>
 
+    <!-- Signup Modal -->
     <div id="signupModal" class="hidden fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md transform transition-all modal-enter">
             <div class="zambian-gradient p-6 rounded-t-2xl">
@@ -320,6 +326,7 @@
         </div>
     </div>
 
+    <!-- Upload Modal -->
     <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md transform transition-all modal-enter">
             <div class="zambian-gradient p-6 rounded-t-2xl">
@@ -358,6 +365,47 @@
         </div>
     </div>
 
+    <!-- Edit Meme Modal -->
+    <div id="editMemeModal" class="hidden fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md transform transition-all modal-enter">
+            <div class="zambian-gradient p-6 rounded-t-2xl">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-edit mr-3"></i>Edit Your Meme
+                </h2>
+                <p class="text-white/80 mt-2">Update your meme's title or image</p>
+            </div>
+            <form id="editForm" class="p-6 space-y-4">
+                <input type="hidden" name="memeId" id="editMemeId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Meme Title</label>
+                    <input type="text" name="memeTitle" id="editMemeTitle" placeholder="Update your meme's title" required
+                           class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-zambian-green focus:border-transparent transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Change Image (Optional)</label>
+                    <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-zambian-green dark:hover:border-zambian-green transition-colors">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 dark:text-gray-500 mb-4"></i>
+                        <input type="file" name="memeImage" accept="image/*" class="hidden" id="editFileInput">
+                        <label for="editFileInput" class="cursor-pointer">
+                            <span class="text-zambian-green font-semibold">Click to upload new image</span>
+                            <span class="text-gray-500 dark:text-gray-400"> or drag and drop</span>
+                        </label>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-zambian-green hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </form>
+            <div class="px-6 pb-6">
+                <button id="closeEdit" class="w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 py-2 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Modal -->
     <div id="commentsModal" class="hidden fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md transform transition-all modal-enter">
             <div class="zambian-gradient p-6 rounded-t-2xl">
@@ -367,7 +415,8 @@
             </div>
             <div class="p-6">
                 <div id="commentsList" class="space-y-4 h-64 overflow-y-auto mb-4 pr-2">
-                    </div>
+                    <!-- Comments will be loaded here -->
+                </div>
                 <form id="addCommentForm" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                     <input type="hidden" id="commentMemeId">
                     <input type="text" id="commentInput" placeholder="Add a comment..." required
@@ -484,7 +533,8 @@
                 login: $("#loginModal"),
                 signup: $("#signupModal"),
                 upload: $("#uploadModal"),
-                comments: $("#commentsModal"), // Added comments modal
+                comments: $("#commentsModal"),
+                edit: $("#editMemeModal")
             }
 
             // Show modals
@@ -512,18 +562,36 @@
                 setTimeout(() => modals.upload.find('div').first().addClass('modal-enter'), 10)
             })
 
-            $(document).on("click", ".comment-btn", function() { // New comment button click handler
+            $(document).on("click", ".comment-btn", function() {
                 if (!isLoggedIn) {
                     showNotification("Please login to view/add comments! 💬", "error")
                     modals.login.removeClass("hidden")
                     return
                 }
                 const memeId = $(this).closest(".meme-card").data("meme-id")
-                $("#commentMemeId").val(memeId) // Set the meme ID for the comment form
+                $("#commentMemeId").val(memeId)
                 fetchComments(memeId)
                 modals.comments.removeClass("hidden")
                 modals.comments.find('.modal-enter').removeClass('modal-enter')
                 setTimeout(() => modals.comments.find('div').first().addClass('modal-enter'), 10)
+            })
+
+            $(document).on("click", ".edit-btn", function() {
+                if (!isLoggedIn) {
+                    showNotification("Please login to edit memes! ✏️", "error")
+                    modals.login.removeClass("hidden")
+                    return
+                }
+                const memeId = $(this).closest(".meme-card").data("meme-id")
+                const memeTitle = $(this).closest(".meme-card").find("h3").text()
+                $("#editMemeId").val(memeId)
+                $("#editMemeTitle").val(memeTitle)
+                $("#editFileInput").val('')
+                $("#editFileInput").siblings("label").find("span").first().text("Click to upload new image")
+
+                modals.edit.removeClass("hidden")
+                modals.edit.find('.modal-enter').removeClass('modal-enter')
+                setTimeout(() => modals.edit.find('div').first().addClass('modal-enter'), 10)
             })
 
             // Close modals
@@ -551,6 +619,12 @@
                 }
             })
 
+            $("#closeEdit, #editMemeModal").click((e) => {
+                if (e.target.id === "closeEdit" || e.target.id === "editMemeModal") {
+                    modals.edit.addClass("hidden")
+                }
+            })
+
             // Form submissions
             $("#loginForm").submit(function (e) {
                 e.preventDefault()
@@ -566,7 +640,7 @@
                 submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Signing In...')
                 submitBtn.prop('disabled', true)
 
-                // AJAX call for login (assuming login.php will be provided later)
+                // AJAX call for login
                 $.ajax({
                     url: 'login.php', 
                     method: 'POST',
@@ -578,7 +652,6 @@
                             modals.login.addClass("hidden")
                             updateAuthState(true, response.username)
                             hideWelcomeBanner()
-                            // Optionally re-fetch memes to show user-specific interactions if any
                             $("#memeGrid").empty()
                             currentPage = 0
                             fetchMemes(currentPage)
@@ -591,7 +664,6 @@
                         console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
                     },
                     complete: function() {
-                        // Reset form
                         $("#loginForm")[0].reset()
                         submitBtn.html('<i class="fas fa-sign-in-alt mr-2"></i>Sign In')
                         submitBtn.prop('disabled', false)
@@ -633,7 +705,6 @@
                             modals.signup.addClass("hidden")
                             updateAuthState(true, response.username)
                             hideWelcomeBanner()
-                            // Optionally re-fetch memes to show user-specific interactions if any
                             $("#memeGrid").empty()
                             currentPage = 0
                             fetchMemes(currentPage)
@@ -646,13 +717,12 @@
                         console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
                     },
                     complete: function() {
-                        // Reset form
                         $("#signupForm")[0].reset()
                         $("#strengthBar").removeClass("strength-weak strength-fair strength-good strength-strong").addClass("strength-weak")
                         $("#strengthText").text("Weak").css("color", "#DC143C")
                         $("#passwordRequirements").text("Must be at least 8 characters with uppercase, lowercase, number, and special character")
                         submitBtn.html('<i class="fas fa-user-plus mr-2"></i>Create Account')
-                        submitBtn.prop('disabled', true) // Re-disable until new password entered
+                        submitBtn.prop('disabled', true)
                     }
                 })
             })
@@ -669,7 +739,7 @@
 
                 const formData = new FormData()
                 formData.append('meme', file)
-                formData.append('title', title) // Add title to form data (if upload.php expects it)
+                formData.append('title', title)
 
                 const submitBtn = $(this).find('button[type="submit"]')
                 submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...')
@@ -686,9 +756,9 @@
                         if (response.success) {
                             showNotification("Meme uploaded successfully! 📸", "success")
                             modals.upload.addClass("hidden")
-                            $("#memeGrid").empty() // Clear existing memes
-                            currentPage = 0 // Reset page to 0 to fetch from start
-                            fetchMemes(currentPage) // Re-fetch to show the new meme
+                            $("#memeGrid").empty()
+                            currentPage = 0
+                            fetchMemes(currentPage)
                         } else {
                             showNotification("Upload failed: " + response.message, "error")
                         }
@@ -698,12 +768,64 @@
                         console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
                     },
                     complete: function() {
-                        // Reset form
                         const fileInput = $("#fileInput")
                         fileInput.val('')
                         fileInput.siblings("label").find("span").first().text("Click to upload")
                         $("#uploadForm").find('input[name="memeTitle"]').val('')
                         submitBtn.html('<i class="fas fa-upload mr-2"></i>Upload Meme')
+                        submitBtn.prop('disabled', false)
+                    }
+                })
+            })
+
+            $("#editForm").submit(function(e) {
+                e.preventDefault()
+                const memeId = $("#editMemeId").val()
+                const newTitle = $("#editMemeTitle").val()
+                const newFile = $("#editFileInput")[0].files[0]
+
+                if (!newTitle && !newFile) {
+                    showNotification("Please provide a new title or a new image! ⚠️", "error")
+                    return
+                }
+
+                const formData = new FormData()
+                formData.append('meme_id', memeId)
+                formData.append('title', newTitle)
+                if (newFile) {
+                    formData.append('meme', newFile)
+                }
+
+                const submitBtn = $(this).find('button[type="submit"]')
+                submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Saving...')
+                submitBtn.prop('disabled', true)
+
+                $.ajax({
+                    url: 'edit_meme.php',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showNotification("Meme updated successfully! ✨", "success")
+                            modals.edit.addClass("hidden")
+                            $("#memeGrid").empty()
+                            currentPage = 0
+                            fetchMemes(currentPage)
+                        } else {
+                            showNotification("Edit failed: " + response.message, "error")
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        showNotification("Failed to connect to the edit server. Please check edit_meme.php.", "error")
+                        console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
+                    },
+                    complete: function() {
+                        $("#editForm")[0].reset()
+                        $("#editFileInput").siblings("label").find("span").first().text("Click to upload new image")
+                        submitBtn.html('<i class="fas fa-save mr-2"></i>Save Changes')
                         submitBtn.prop('disabled', false)
                     }
                 })
@@ -731,8 +853,8 @@
                     success: function(response) {
                         if (response.success) {
                             showNotification("Comment added! 🎉", "success")
-                            $("#commentInput").val('') // Clear input
-                            fetchComments(memeId) // Re-fetch comments to display the new one
+                            $("#commentInput").val('')
+                            fetchComments(memeId)
                         } else {
                             showNotification("Failed to add comment: " + response.message, "error")
                         }
@@ -839,6 +961,37 @@
                 setTimeout(() => $btn.removeClass("scale-125"), 200)
             })
 
+            $(document).on("click", ".delete-btn", function() {
+                if (!isLoggedIn) {
+                    showNotification("Please login to delete memes! 🗑️", "error")
+                    modals.login.removeClass("hidden")
+                    return
+                }
+                const memeId = $(this).closest(".meme-card").data("meme-id")
+                if (confirm("Are you sure you want to delete this meme? This action cannot be undone.")) {
+                    $.ajax({
+                        url: 'delete_meme.php',
+                        method: 'POST',
+                        data: { meme_id: memeId },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                showNotification("Meme deleted successfully! 🗑️", "success")
+                                $("#memeGrid").empty()
+                                currentPage = 0
+                                fetchMemes(currentPage)
+                            } else {
+                                showNotification("Deletion failed: " + response.message, "error")
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            showNotification("Failed to connect to the delete server. Please check delete_meme.php.", "error")
+                            console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
+                        }
+                    })
+                }
+            })
+
             $(document).on("click", ".share-btn", (e) => {
                 if (!isLoggedIn) {
                     e.preventDefault()
@@ -891,6 +1044,13 @@
                 }
             })
 
+            $("#editFileInput").change(function() {
+                const file = this.files[0]
+                if (file) {
+                    $(this).siblings("label").find("span").first().text(file.name)
+                }
+            })
+
             // Load more button - now calls fetchMemes
             $("#loadMoreBtn").click(() => {
                 fetchMemes(currentPage + 1)
@@ -905,6 +1065,47 @@
                 $("#welcomeBanner").removeClass("slide-out").show()
             })
 
+            // Filter button click handlers
+            $("#filter-all").click(() => {
+                $("#memeGrid").empty();
+                currentPage = 0;
+                fetchMemes(currentPage, 'all');
+                $(".filter-btn").removeClass("bg-zambian-green text-white").addClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300");
+                $("#filter-all").removeClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300").addClass("bg-zambian-green text-white");
+            });
+
+            $("#filter-new").click(() => {
+                $("#memeGrid").empty();
+                currentPage = 0;
+                fetchMemes(currentPage, 'new');
+                $(".filter-btn").removeClass("bg-zambian-green text-white").addClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300");
+                $("#filter-new").removeClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300").addClass("bg-zambian-green text-white");
+            });
+
+            $("#filter-trending").click(() => {
+                $("#memeGrid").empty();
+                currentPage = 0;
+                fetchMemes(currentPage, 'trending');
+                $(".filter-btn").removeClass("bg-zambian-green text-white").addClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300");
+                $("#filter-trending").removeClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300").addClass("bg-zambian-green text-white");
+            });
+
+            $("#filter-popular").click(() => {
+                $("#memeGrid").empty();
+                currentPage = 0;
+                fetchMemes(currentPage, 'popular');
+                $(".filter-btn").removeClass("bg-zambian-green text-white").addClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300");
+                $("#filter-popular").removeClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300").addClass("bg-zambian-green text-white");
+            });
+
+            $("#filter-hot").click(() => {
+                $("#memeGrid").empty();
+                currentPage = 0;
+                fetchMemes(currentPage, 'hot');
+                $(".filter-btn").removeClass("bg-zambian-green text-white").addClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300");
+                $("#filter-hot").removeClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300").addClass("bg-zambian-green text-white");
+            });
+
             // Utility functions
             function updateAuthState(loggedIn, username = '') {
                 isLoggedIn = loggedIn
@@ -913,9 +1114,11 @@
                     $("#authButtons").addClass("hidden")
                     $("#userProfile").removeClass("hidden")
                     $("#username").text(username)
+                    $("#memeFilterPanel").removeClass("hidden") // Show filter panel when logged in
                 } else {
                     $("#authButtons").removeClass("hidden")
                     $("#userProfile").addClass("hidden")
+                    $("#memeFilterPanel").addClass("hidden") // Hide filter panel when logged out
                 }
             }
 
@@ -991,24 +1194,36 @@
                 // Assuming memes are stored in an 'uploads' directory
                 const imageUrl = `uploads/${meme.filename}`
                 const memeTitle = meme.title || "Untitled Meme" // Use title if available, otherwise default
-const memeCardHtml = $(`
-    <div class="space-y-2">
-        <div class="flex justify-start">
-            <div class="bg-${tagColor}/80 backdrop-blur-sm rounded-full px-3 py-1">
-                <span class="text-white text-xs font-medium">Trending</span>
-            </div>
-        </div>
-        <div class="meme-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300" data-meme-id="${meme.id}">
-            <div class="relative w-full">
-                <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
-            </div>
+                
+                // Check if current user is the owner of this meme
+                const isOwner = isLoggedIn && currentUser === meme.username;
+                const ownerButtons = isOwner ? `
+                    <button class="reaction-btn edit-btn text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="reaction-btn delete-btn text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                ` : '';
+
+                const memeCardHtml = $(`
+                    <div class="space-y-2">
+                        <div class="flex justify-start">
+                            <div class="bg-${tagColor}/80 backdrop-blur-sm rounded-full px-3 py-1">
+                                <span class="text-white text-xs font-medium">Trending</span>
+                            </div>
+                        </div>
+                        <div class="meme-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300" data-meme-id="${meme.id}">
+                            <div class="relative w-full">
+                                <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
+                            </div>
                             <div class="p-4">
                                 <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">${memeTitle}</h3>
                                 <div class="flex items-center justify-between mb-3">
                                     <div class="flex items-center space-x-4">
                                         <button class="reaction-btn like-btn flex items-center space-x-1 text-zambian-red hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg">
                                             <i class="fas fa-heart"></i>
-                                            <span class="like-count text-sm font-medium">${meme.likes}</span>
+                                         <span class="like-count text-sm font-medium">${meme.likes ?? 0}</span>
                                         </button>
                                         <button class="reaction-btn upvote-btn flex items-center space-x-1 text-zambian-orange hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg">
                                             <i class="fas fa-arrow-up"></i>
@@ -1025,6 +1240,7 @@ const memeCardHtml = $(`
                                         <button class="reaction-btn download-btn text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg">
                                             <i class="fas fa-download"></i>
                                         </button>
+                                        ${ownerButtons}
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -1041,15 +1257,19 @@ const memeCardHtml = $(`
             }
 
             // Function to fetch memes from fetch_memes.php
-            function fetchMemes(pageToLoad = 0) {
+            function fetchMemes(pageToLoad = 0, filter = 'all') {
                 const btn = $("#loadMoreBtn")
                 btn.html('<i class="fas fa-spinner fa-spin mr-2"></i>Loading...')
                 btn.prop('disabled', true)
 
                 $.ajax({
-                    url: 'fetch_memes.php', // Updated to fetch_memes.php
+                    url: 'fetch_memes.php',
                     method: 'GET',
-                    data: { page: pageToLoad, limit: memesPerPage },
+                    data: { 
+                        page: pageToLoad, 
+                        limit: memesPerPage,
+                        filter: filter 
+                    },
                     dataType: 'json',
                     success: function(response) {
                         if (response.success) {
@@ -1140,5 +1360,4 @@ const memeCardHtml = $(`
         })
     </script>
 </body>
-
 </html>
