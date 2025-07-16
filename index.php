@@ -1,4 +1,8 @@
-<?php session_start(); ?>
+<?php
+session_start();
+$isLoggedIn = isset($_SESSION['user_id']);
+$username = $_SESSION['username'] ?? '';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
