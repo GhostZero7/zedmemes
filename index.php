@@ -123,7 +123,7 @@ $username = $_SESSION['username'] ?? '';
         /* Fixed image sizing for meme cards */
         .meme-image {
             width: 100%;
-            object-fit: contain;
+            object-fit: cover;
             object-position: center;
             background-color: #f8f9fa;
             border-radius: 12px;
@@ -226,15 +226,19 @@ $username = $_SESSION['username'] ?? '';
         </div>
 
         <!-- Filter Buttons (Hidden by default) -->
-        <div id="memeFilterPanel" class="hidden flex justify-center space-x-2 sm:space-x-4 mb-8">
-            <button id="filter-all" class="filter-btn bg-zambian-green text-white px-4 py-2 rounded-full font-semibold shadow-md transition-all duration-200" data-filter="all">All</button>
-            <button id="filter-new" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="new">New</button>
-            <button id="filter-trending" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="trending">Trending</button>
-            <button id="filter-popular" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="popular">Popular</button>
-            <button id="filter-hot" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-semibold shadow-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="hot">Hot</button>
-        </div>
+        <div id="memeFilterPanel" class="hidden flex flex-wrap justify-center gap-2 sm:gap-3 mb-6">
+    <button id="filter-all" class="filter-btn bg-zambian-green text-white px-3 py-1.5 text-sm rounded-full font-medium shadow transition-all duration-200" data-filter="all">All</button>
+    <button id="filter-new" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm rounded-full font-medium shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="new">New</button>
+    <button id="filter-trending" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm rounded-full font-medium shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="trending">Trending</button>
+    <button id="filter-popular" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm rounded-full font-medium shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="popular">Popular</button>
+    <button id="filter-hot" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm rounded-full font-medium shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="hot">Hot</button>
+    <button id="filter-my" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm rounded-full font-medium shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="my">My Memes</button>
+</div>
 
-        <div class="space-y-6" id="memeGrid">
+       <div id="memeGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4">
+
+
+
             <!-- Memes will be loaded here -->
         </div>
 
@@ -486,6 +490,30 @@ $username = $_SESSION['username'] ?? '';
 
                 return { strength, feedback }
             }
+            $("#filter-my").on("click", function () {
+              $("#memeGrid").empty()
+              $("#loadMoreBtn").hide()
+
+             $.getJSON('fetch_user_memes.php', function (res) {
+             if (res.success && res.memes.length > 0) {
+            res.memes.forEach(meme => renderMemeCard(meme))
+            showNotification("Your memes loaded! 🧍", "success")
+              } else {
+            showNotification("You haven’t uploaded any memes yet.", "info")
+        }
+    })
+})        
+$(document).on('click', '.menu-btn', function (e) {
+    e.stopPropagation();
+    $(".menu-dropdown").not($(this).siblings('.menu-dropdown')).hide(); // Hide others
+    $(this).siblings('.menu-dropdown').toggle(); // Toggle this one
+});
+
+// Hide dropdown when clicking outside
+$(document).on('click', function () {
+    $(".menu-dropdown").hide();
+});
+
 
             // Password strength indicator
             $("#signupPassword").on("input", function() {
@@ -976,36 +1004,44 @@ $username = $_SESSION['username'] ?? '';
                 setTimeout(() => $btn.removeClass("scale-125"), 200)
             })
 
-            $(document).on("click", ".delete-btn", function() {
-                if (!isLoggedIn) {
-                    showNotification("Please login to delete memes! 🗑️", "error")
-                    modals.login.removeClass("hidden")
-                    return
-                }
-                const memeId = $(this).closest(".meme-card").data("meme-id")
-                if (confirm("Are you sure you want to delete this meme? This action cannot be undone.")) {
-                    $.ajax({
-                        url: 'delete_meme.php',
-                        method: 'POST',
-                        data: { meme_id: memeId },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                showNotification("Meme deleted successfully! 🗑️", "success")
-                                $("#memeGrid").empty()
-                                currentPage = 0
-                                fetchMemes(currentPage)
-                            } else {
-                                showNotification("Deletion failed: " + response.message, "error")
-                            }
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            showNotification("Failed to connect to the delete server. Please check delete_meme.php.", "error")
-                            console.error("AJAX error:", textStatus, errorThrown, jqXHR.responseText)
-                        }
-                    })
-                }
-            })
+           $(document).on('click', '.delete-btn', function () {
+    const memeCard = $(this).closest('.meme-card');
+    const memeId = memeCard.data('meme-id');
+
+    if (!memeId) {
+        showNotification('Meme ID not found', 'error');
+        return;
+    }
+
+    if (confirm("Are you sure you want to delete this meme?")) {
+        $.ajax({
+            url: 'delete_meme.php',
+            method: 'POST',
+            data: { meme_id: memeId },
+            success: function (response) {
+               if (response.success) {
+    showNotification("Meme deleted successfully", "success");
+    memeCard.closest('.meme-wrapper').remove(); // remove from UI
+
+    totalMemes--; // 👈 Update total meme count
+
+    // Optional: Try loading the next meme to fill the space
+    const currentlyDisplayed = $(".meme-wrapper").length;
+    if (currentlyDisplayed < totalMemes) {
+        fetchMemes(currentPage, currentFilter); // 👈 Fetch one more to replace
+    } else if (currentlyDisplayed === 0) {
+        $("#loadMoreBtn").hide(); // No more memes to load
+        showNotification("No memes left to show.", "info");
+    }
+}
+            },
+            error: function () {
+                showNotification("Error deleting meme", "error");
+            }
+        });
+    }
+});
+
 
             $(document).on("click", ".share-btn", (e) => {
                 if (!isLoggedIn) {
@@ -1204,69 +1240,79 @@ $username = $_SESSION['username'] ?? '';
             }
 
             // Function to render a single meme card based on data from fetch_memes.php
-            function renderMemeCard(meme) {
-                const tagColor = getRandomTagColor()
-                const uploadedTime = timeSince(meme.uploaded_at)
-                // Assuming memes are stored in an 'uploads' directory
-                const imageUrl = `uploads/${meme.filename}`
-                const memeTitle = meme.title || "Untitled Meme" // Use title if available, otherwise default
-                
-                // Check if current user is the owner of this meme
-              const isOwner = isLoggedIn && currentUserId === parseInt(meme.user_id) 
-                const ownerButtons = isOwner ? `
-                    <button class="reaction-btn edit-btn text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="reaction-btn delete-btn text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                ` : '';
+ function renderMemeCard(meme) {
+    const uploadedTime = timeSince(meme.uploaded_at)
+    const imageUrl = `uploads/${meme.filename}`
+    const memeTitle = meme.title || "Untitled Meme"
+    const isOwner = isLoggedIn && currentUser === meme.username
 
-                const memeCardHtml = $(`
-                    <div class="space-y-2">
-                        <div class="flex justify-start">
-                            <div class="bg-${tagColor}/80 backdrop-blur-sm rounded-full px-3 py-1">
-                                <span class="text-white text-xs font-medium">Trending</span>
-                            </div>
+    const ownerMenu = isOwner ? `
+        <div class="relative inline-block text-left">
+            <button class="menu-btn p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="menu-dropdown absolute left-0 mt-2 w-28 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10">
+                <div class="py-1 text-sm text-gray-700 dark:text-gray-200">
+                    <button class="edit-btn block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Edit</button>
+                    <button class="delete-btn block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-700/50">Delete</button>
+                </div>
+            </div>
+        </div>
+    ` : ''
+
+    const memeCardHtml = $(`
+        <div class="meme-wrapper meme-card w-full space-y-2" data-meme-id="${meme.id}">
+            <div class="flex justify-between items-center px-2 pt-2">
+                ${ownerMenu}
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300">
+                <div class="relative w-full">
+                    <img src="${imageUrl}" alt="${memeTitle}" class="meme-image object-cover w-full h-auto">
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">${memeTitle}</h3>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-4">
+                            <button class="reaction-btn like-btn flex items-center space-x-1 text-zambian-red hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg">
+                                <i class="fas fa-heart"></i>
+                                <span class="like-count text-sm font-medium">${meme.likes ?? 0}</span>
+                            </button>
+                            <button class="reaction-btn upvote-btn flex items-center space-x-1 text-zambian-orange hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg">
+                                <i class="fas fa-arrow-up"></i>
+                                <span class="upvote-count text-sm font-medium">${meme.upvotes}</span>
+                            </button>
                         </div>
-                        <div class="meme-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300" data-meme-id="${meme.id}">
-                            <div class="relative w-full">
-                                <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">${memeTitle}</h3>
-                                <div class="flex items-center justify-between mb-3">
-                                    <div class="flex items-center space-x-4">
-                                        <button class="reaction-btn like-btn flex items-center space-x-1 text-zambian-red hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg">
-                                            <i class="fas fa-heart"></i>
-                                         <span class="like-count text-sm font-medium">${meme.likes ?? 0}</span>
-                                        </button>
-                                        <button class="reaction-btn upvote-btn flex items-center space-x-1 text-zambian-orange hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg">
-                                            <i class="fas fa-arrow-up"></i>
-                                            <span class="upvote-count text-sm font-medium">${meme.upvotes}</span>
-                                        </button>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <button class="reaction-btn comment-btn text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg">
-                                            <i class="fas fa-comment"></i>
-                                        </button>
-                                        <button class="reaction-btn share-btn text-zambian-green hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded-lg">
-                                            <i class="fas fa-share-alt"></i>
-                                        </button>
-                                        <button class="reaction-btn download-btn text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg">
-                                            <i class="fas fa-download"></i>
-                                        </button>
-                                        ${ownerButtons}
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                    <span>By @${meme.username}</span>
-                                    <span>${uploadedTime}</span>
-                                </div>
-                            </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="reaction-btn comment-btn text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-2 rounded-lg">
+                                <i class="fas fa-comment"></i>
+                            </button>
+                            <button class="reaction-btn share-btn text-zambian-green hover:bg-green-50 dark:hover:bg-green-900/20 p-2 rounded-lg">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <button class="reaction-btn download-btn text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded-lg">
+                                <i class="fas fa-download"></i>
+                            </button>
                         </div>
                     </div>
-                `)
+                    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <span>By @${meme.username}</span>
+                        <span>${uploadedTime}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `)
+
+  
+
+
+
+
+    
+
+
+   
+
 
                 $("#memeGrid").append(memeCardHtml)
                 memeCardHtml.hide().fadeIn(500)
