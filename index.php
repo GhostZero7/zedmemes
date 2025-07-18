@@ -48,13 +48,20 @@ $username = $_SESSION['username'] ?? '';
         }
         
         .meme-card {
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            
         }
         
         .meme-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            
+            box-shadow: none !important;
+            background: transparent !important;
+            backdrop-filter: none !important;
         }
         
         .dark .meme-card:hover {
@@ -123,13 +130,11 @@ $username = $_SESSION['username'] ?? '';
         /* Fixed image sizing for meme cards */
         .meme-image {
             width: 100%;
-            object-fit: contain;/*changed*/
+            object-fit: cover;
             object-position: center;
             background-color: #f8f9fa;
             border-radius: 12px;
             display: block;
-            max-height: 300px;/*changed*/
-            min-height: 200px;/*changed*/
         }
 
         .dark .meme-image {
@@ -217,7 +222,7 @@ $username = $_SESSION['username'] ?? '';
         </div>
     </header>
 
-    <main class="max-w-lg mx-auto px-4 py-6">
+    <main class="max-w-7xl mx-auto px-4 py-6">
         <div id="welcomeBanner" class="welcome-banner zambian-animated-bg rounded-2xl p-6 sm:p-8 mb-8 text-white relative overflow-hidden">
             <div class="relative z-10">
                 <div class="flex items-center justify-center mb-4">
@@ -237,18 +242,19 @@ $username = $_SESSION['username'] ?? '';
     <button id="filter-my" class="filter-btn bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm rounded-full font-medium shadow hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" data-filter="my">My Memes</button>
 </div>
 
-       <div id="memeGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-6 px-4">
+       <div id="memeGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-5 px-3">
 
 
 
             <!-- Memes will be loaded here -->
+        
         </div>
-
         <div class="text-center mt-8 mb-20">
             <button id="loadMoreBtn" class="bg-zambian-green hover:bg-green-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
                 <i class="fas fa-plus mr-2"></i>Load More Memes
             </button>
         </div>
+        
     </main>
 
     <button id="uploadMemeBtn" class="floating-upload fixed bottom-8 right-8 text-white px-6 py-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-30">
@@ -493,18 +499,22 @@ $username = $_SESSION['username'] ?? '';
                 return { strength, feedback }
             }
             $("#filter-my").on("click", function () {
-              $("#memeGrid").empty()
-              $("#loadMoreBtn").hide()
+            $("#memeGrid").empty()
+            $("#loadMoreBtn").hide()
 
-             $.getJSON('fetch_user_memes.php', function (res) {
-             if (res.success && res.memes.length > 0) {
-            res.memes.forEach(meme => renderMemeCard(meme))
-            showNotification("Your memes loaded! 🧍", "success")
-              } else {
-            showNotification("You haven’t uploaded any memes yet.", "info")
-        }
-    })
-})        
+            // Add these two lines to fix the highlighting issue
+            $(".filter-btn").removeClass("bg-zambian-green text-white").addClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300");
+            $("#filter-my").removeClass("bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300").addClass("bg-zambian-green text-white");
+
+            $.getJSON('fetch_user_memes.php', function (res) {
+                if (res.success && res.memes.length > 0) {
+                    res.memes.forEach(meme => renderMemeCard(meme))
+                    showNotification("Your memes loaded! 🧍", "success")
+                } else {
+                    showNotification("You haven't uploaded any memes yet.", "info")
+                }
+                })
+            })
 $(document).on('click', '.menu-btn', function (e) {
     e.stopPropagation();
     $(".menu-dropdown").not($(this).siblings('.menu-dropdown')).hide(); // Hide others
@@ -1249,11 +1259,11 @@ $(document).on('click', function () {
     const isOwner = isLoggedIn && currentUser === meme.username
 
     const ownerMenu = isOwner ? `
-     <div class="absolute top-2 right-2 z-10">
-            <button class="menu-btn p-2 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/30 text-white">
+        <div class="relative inline-block text-left">
+            <button class="menu-btn p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
                 <i class="fas fa-ellipsis-h"></i>
             </button>
-            <div class="menu-dropdown absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-20">
+            <div class="menu-dropdown absolute left-0 mt-4 w-28 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10">
                 <div class="py-1 text-sm text-gray-700 dark:text-gray-200">
                     <button class="edit-btn block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Edit</button>
                     <button class="delete-btn block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-700/50">Delete</button>
@@ -1263,16 +1273,18 @@ $(document).on('click', function () {
     ` : ''
 
     const memeCardHtml = $(`
-         <div class="meme-wrapper meme-card w-full" data-meme-id="${meme.id}">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300 relative">
+        <div class="meme-wrapper meme-card w-full" data-meme-id="${meme.id}">
+            <div class="flex justify-between items-center px-2 pt-2">
                 ${ownerMenu}
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300 relative">
                 <div class="relative w-full">
                     <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
                 </div>
-                <div class="p-4">
+                <div class="p-2">
                     <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">${memeTitle}</h3>
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
                             <button class="reaction-btn like-btn flex items-center space-x-1 text-zambian-red hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg">
                                 <i class="fas fa-heart"></i>
                                 <span class="like-count text-sm font-medium">${meme.likes ?? 0}</span>
@@ -1302,9 +1314,6 @@ $(document).on('click', function () {
             </div>
         </div>
     `)
-
-                     
-       
 
   
 

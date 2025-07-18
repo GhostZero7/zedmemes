@@ -5,7 +5,7 @@ $user = 'root';
 $pass = ''; // Default for XAMPP
 $charset = 'utf8mb4';
 
-$dsn = "mysql:host=$host;port=3307;dbname=$db;charset=$charset"; // port=3307 for XAMPP
+$dsn = "mysql:host=$host;port=3306;dbname=$db;charset=$charset"; // port=3307 for XAMPP
 
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
