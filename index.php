@@ -1249,11 +1249,11 @@ $(document).on('click', function () {
     const isOwner = isLoggedIn && currentUser === meme.username
 
     const ownerMenu = isOwner ? `
-        <div class="relative inline-block text-left">
-            <button class="menu-btn p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+     <div class="absolute top-2 right-2 z-10">
+            <button class="menu-btn p-2 rounded-full bg-black/20 backdrop-blur-sm hover:bg-black/30 text-white">
                 <i class="fas fa-ellipsis-h"></i>
             </button>
-            <div class="menu-dropdown absolute left-0 mt-2 w-28 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10">
+            <div class="menu-dropdown absolute right-0 mt-2 w-28 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-20">
                 <div class="py-1 text-sm text-gray-700 dark:text-gray-200">
                     <button class="edit-btn block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Edit</button>
                     <button class="delete-btn block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-700/50">Delete</button>
@@ -1263,13 +1263,11 @@ $(document).on('click', function () {
     ` : ''
 
     const memeCardHtml = $(`
-        <div class="meme-wrapper meme-card w-full space-y-2" data-meme-id="${meme.id}">
-            <div class="flex justify-between items-center px-2 pt-2">
+         <div class="meme-wrapper meme-card w-full" data-meme-id="${meme.id}">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300 relative">
                 ${ownerMenu}
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-colors duration-300">
                 <div class="relative w-full">
-                    <img src="${imageUrl}" alt="${memeTitle}" class="meme-image object-cover w-full h-auto">
+                    <img src="${imageUrl}" alt="${memeTitle}" class="meme-image">
                 </div>
                 <div class="p-4">
                     <h3 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">${memeTitle}</h3>
@@ -1304,6 +1302,9 @@ $(document).on('click', function () {
             </div>
         </div>
     `)
+
+                     
+       
 
   
 
