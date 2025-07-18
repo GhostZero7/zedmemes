@@ -123,11 +123,13 @@ $username = $_SESSION['username'] ?? '';
         /* Fixed image sizing for meme cards */
         .meme-image {
             width: 100%;
-            object-fit: cover;
+            object-fit: contain;/*changed*/
             object-position: center;
             background-color: #f8f9fa;
             border-radius: 12px;
             display: block;
+            max-height: 300px;/*changed*/
+            min-height: 200px;/*changed*/
         }
 
         .dark .meme-image {
